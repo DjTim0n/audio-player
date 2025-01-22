@@ -13,10 +13,14 @@ export const AudioPlayer = () => {
   const soundRef = useRef<Howl | null>(null);
   const intervalRef = useRef<NodeJS.Timer | null>(null);
 
-  const tracks = [
+  const tracks: {
+    label: string;
+    src: string;
+  }[] = [
     { label: 'Rob Zombie - Dragula', src: './RobZombieDragula.mp3' },
     { label: 'BR.wav', src: './BR.wav' },
     { label: 'BR_3hz_174-177_cyrcle.wav', src: './BR_3hz_174-177_cyrcle.wav' },
+    { label: 'BR_3hz_174-177_cyrcle_1.wav', src: 'BR_3hz_174-177_cyrcle_1.wav' },
   ];
 
   useEffect(() => {
