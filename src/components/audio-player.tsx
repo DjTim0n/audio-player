@@ -16,6 +16,7 @@ export const AudioPlayer = () => {
   const tracks = [
     { label: 'Rob Zombie - Dragula', src: './RobZombieDragula.mp3' },
     { label: 'BR.wav', src: './BR.wav' },
+    { label: 'BR_3hz_174-177_cyrcle.wav', src: './BR_3hz_174-177_cyrcle.wav' },
   ];
 
   useEffect(() => {
