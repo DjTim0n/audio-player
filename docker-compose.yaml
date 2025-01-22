@@ -1,0 +1,11 @@
+version: '3.9'
+
+services:
+  audio-player:
+    container_name: audio-player
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - 8467:3000
