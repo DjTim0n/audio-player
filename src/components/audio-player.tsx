@@ -19,11 +19,8 @@ export const AudioPlayer = () => {
   const [isLooping, setIsLooping] = useState(false);
   const [selectedTrack, setSelectedTrack] = useState('');
   const [tracks, setTracks] = useState<Track[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const soundRef = useRef<Howl | null>(null);
   const intervalRef = useRef<NodeJS.Timer | null>(null);
-
-  const access_token = useAuthStore((state) => state.access_token);
 
   const getTracks = async () => {
     await api.get('audio/get_tracks').then((response) => {
@@ -38,7 +35,7 @@ export const AudioPlayer = () => {
 
   useEffect(() => {
     if (selectedTrack) {
-      initializeHowl('/' + selectedTrack);
+      initializeHowl(api.getUri() + '/' + selectedTrack);
     }
 
     return () => {
@@ -53,35 +50,13 @@ export const AudioPlayer = () => {
     }
   }, [volume]);
 
-  const getBlobFromUrl = async (url: string) => {
-    const response = await api.get(url, {
-      responseType: 'blob',
-    });
-
-    const blob = new Blob([response.data], { type: response.headers['content-type'] });
-
-    const objectUrl = URL.createObjectURL(blob);
-
-    return objectUrl;
-  };
-
   const initializeHowl = async (src: string) => {
-    setIsLoading(true);
-    const objectUrl = await getBlobFromUrl(src);
-    setIsLoading(false);
     soundRef.current?.unload();
     soundRef.current = new Howl({
-      src: [objectUrl],
+      src: [src],
       volume: volume,
       loop: isLooping,
       html5: true,
-      xhr: {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-        },
-        withCredentials: true,
-      },
       onload: () => {
         setDuration(soundRef.current?.duration() || 0);
       },
