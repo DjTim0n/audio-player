@@ -1,5 +1,8 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { cn } from '@/lib/utils';
+import ProvidersWrapper from '@/store/providers-wrapper';
+import { ThemeProvider } from '@/components/providers/theme-provider';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -12,8 +15,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="antialiased">{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body className={cn('h-dvh min-h-dvh max-h-dvh w-screen')}>
+        <ThemeProvider>
+          <ProvidersWrapper>{children}</ProvidersWrapper>
+        </ThemeProvider>
+      </body>
     </html>
   );
 }

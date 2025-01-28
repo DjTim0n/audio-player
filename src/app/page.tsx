@@ -1,11 +1,5 @@
-import { AudioPlayer } from '@/components/audio-player';
+import { AuthPage } from '@/components/pages/authPage';
 
 export default function Home() {
-  return (
-    <>
-      <div>
-        <AudioPlayer />
-      </div>
-    </>
-  );
+  return <AuthPage />;
 }

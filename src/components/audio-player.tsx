@@ -1,36 +1,50 @@
 'use client';
 
+import { api } from '@/lib/config/axios';
+import { useAuthStore } from '@/store/auth/auth-store-provider';
 import { Howl } from 'howler';
 import { useState, useEffect, useRef } from 'react';
+
+interface Track {
+  title: string;
+  artist: string;
+  url: string;
+}
 
 export const AudioPlayer = () => {
   const [volume, setVolume] = useState(0.3);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0); // Текущее время трека
-  const [duration, setDuration] = useState(0); // Длительность трека
-  const [isLooping, setIsLooping] = useState(false); // Режим повтора
-  const [selectedTrack, setSelectedTrack] = useState('./RobZombieDragula.mp3'); // Выбранный трек
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isLooping, setIsLooping] = useState(false);
+  const [selectedTrack, setSelectedTrack] = useState('');
+  const [tracks, setTracks] = useState<Track[]>([]);
   const soundRef = useRef<Howl | null>(null);
   const intervalRef = useRef<NodeJS.Timer | null>(null);
 
-  const tracks: {
-    label: string;
-    src: string;
-  }[] = [
-    { label: 'Rob Zombie - Dragula', src: './RobZombieDragula.mp3' },
-    { label: 'BR.wav', src: './BR.wav' },
-    { label: 'BR_3hz_174-177_cyrcle.wav', src: './BR_3hz_174-177_cyrcle.wav' },
-    { label: 'BR_3hz_174-177_cyrcle_1.wav', src: 'BR_3hz_174-177_cyrcle_1.wav' },
-  ];
+  const access_token = useAuthStore((state) => state.access_token);
+
+  const getTracks = async () => {
+    await api.get('audio/get_tracks').then((response) => {
+      console.log('🚀 ~ awaitapi.get ~ response:', response);
+      setTracks(response.data);
+    });
+  };
 
   useEffect(() => {
-    initializeHowl(selectedTrack);
+    getTracks();
+  }, []);
+
+  useEffect(() => {
+    if (selectedTrack) {
+      initializeHowl('/' + selectedTrack);
+    }
 
     return () => {
       soundRef.current?.unload();
-      stopUpdatingTime(); // Чистим интервал
+      stopUpdatingTime();
     };
-  }, [selectedTrack, isLooping]); // Пересоздаём Howl при смене трека или режима повтора
+  }, [selectedTrack, isLooping]);
 
   useEffect(() => {
     if (soundRef.current) {
@@ -38,24 +52,43 @@ export const AudioPlayer = () => {
     }
   }, [volume]);
 
-  const initializeHowl = (src: string) => {
-    soundRef.current?.unload(); // Удаляем предыдущий объект Howl
+  const initializeHowl = async (src: string) => {
+    const response = await api.get(src, {
+      responseType: 'blob',
+    });
+
+    const blob = new Blob([response.data], { type: response.headers['content-type'] });
+
+    const objectUrl = URL.createObjectURL(blob);
+
+    soundRef.current?.unload();
     soundRef.current = new Howl({
-      src: [src],
+      src: [objectUrl],
       volume: volume,
       loop: isLooping,
+      html5: true,
+      xhr: {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+        withCredentials: true,
+      },
+      onload: () => {
+        setDuration(soundRef.current?.duration() || 0);
+      },
       onplay: () => {
         setIsPlaying(true);
-        setDuration(soundRef.current?.duration() || 0); // Устанавливаем длительность
-        startUpdatingTime(); // Начинаем обновлять время
+        setDuration(soundRef.current?.duration() || 0);
+        startUpdatingTime();
       },
       onpause: () => {
         setIsPlaying(false);
-        stopUpdatingTime(); // Останавливаем обновление времени
+        stopUpdatingTime();
       },
       onstop: () => {
         setIsPlaying(false);
-        setCurrentTime(0); // Сбрасываем текущее время
+        setCurrentTime(0);
         stopUpdatingTime();
       },
       onend: () => {
@@ -65,7 +98,6 @@ export const AudioPlayer = () => {
           stopUpdatingTime();
         }
       },
-      preload: true,
     });
   };
 
@@ -88,7 +120,7 @@ export const AudioPlayer = () => {
 
   const handleSeek = (time: number) => {
     if (soundRef.current) {
-      soundRef.current.seek(time); // Перематываем на указанное время
+      soundRef.current.seek(time);
       setCurrentTime(time);
     }
   };
@@ -98,9 +130,9 @@ export const AudioPlayer = () => {
   };
 
   const toggleLoop = () => {
-    setIsLooping(!isLooping); // Переключаем режим повтора
+    setIsLooping(!isLooping);
     if (soundRef.current) {
-      soundRef.current.loop(!isLooping); // Обновляем loop в Howl
+      soundRef.current.loop(!isLooping);
     }
   };
 
@@ -108,7 +140,7 @@ export const AudioPlayer = () => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60)
       .toString()
-      .padStart(2, '0'); // Добавляем ведущий ноль для секунд
+      .padStart(2, '0');
     return `${minutes}:${seconds}`;
   };
 
@@ -120,13 +152,14 @@ export const AudioPlayer = () => {
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center h-dvh gap-4">
-        <div className="flex flex-row gap-3 items-center mb-5">
+      <div className="flex flex-col items-center justify-center gap-4 bg-black p-5 rounded-xl">
+        <div className="flex flex-row gap-3 items-center">
           <p>Track:</p>
           <select value={selectedTrack} onChange={handleTrackChange} className="border rounded p-1 bg-black">
-            {tracks.map((track) => (
-              <option key={track.src} value={track.src}>
-                {track.label}
+            <option value="">Select a track</option>
+            {tracks.map((track, inx) => (
+              <option key={inx} value={track.url}>
+                {track.artist} - {track.title}
               </option>
             ))}
           </select>
