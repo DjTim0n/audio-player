@@ -19,6 +19,8 @@ export const RegForm = () => {
       .post('/auth/register', {
         email,
         password,
+        first_name,
+        last_name,
       })
       .then((res) => {
         console.log(res.data);
