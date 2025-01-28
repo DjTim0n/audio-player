@@ -1,5 +1,6 @@
 'use client';
 
+import Loading from '@/app/(auth)/loading';
 import { useAxiosAuth } from '@/lib/hooks/useAxiosAuth';
 import { useAuthStore } from '@/store/auth/auth-store-provider';
 import { useProfileStore } from '@/store/profile/profile-store-provider';
@@ -86,7 +87,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const auth = useAuth({ redirect: false });
 
   if (auth.loading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   return <>{children}</>;

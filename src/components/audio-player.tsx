@@ -19,6 +19,7 @@ export const AudioPlayer = () => {
   const [isLooping, setIsLooping] = useState(false);
   const [selectedTrack, setSelectedTrack] = useState('');
   const [tracks, setTracks] = useState<Track[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const soundRef = useRef<Howl | null>(null);
   const intervalRef = useRef<NodeJS.Timer | null>(null);
 
@@ -52,8 +53,8 @@ export const AudioPlayer = () => {
     }
   }, [volume]);
 
-  const initializeHowl = async (src: string) => {
-    const response = await api.get(src, {
+  const getBlobFromUrl = async (url: string) => {
+    const response = await api.get(url, {
       responseType: 'blob',
     });
 
@@ -61,6 +62,13 @@ export const AudioPlayer = () => {
 
     const objectUrl = URL.createObjectURL(blob);
 
+    return objectUrl;
+  };
+
+  const initializeHowl = async (src: string) => {
+    setIsLoading(true);
+    const objectUrl = await getBlobFromUrl(src);
+    setIsLoading(false);
     soundRef.current?.unload();
     soundRef.current = new Howl({
       src: [objectUrl],
@@ -164,15 +172,20 @@ export const AudioPlayer = () => {
             ))}
           </select>
         </div>
-
-        {isPlaying ? (
-          <button className="m-2 rounded-md bg-green-500 text-white p-2" onClick={() => soundRef.current?.pause()}>
-            Pause
-          </button>
+        {isLoading ? (
+          <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-slate-200 border-t-slate-600" />
         ) : (
-          <button className="m-2 rounded-md bg-blue-500 text-white p-2" onClick={() => soundRef.current?.play()}>
-            Play
-          </button>
+          <>
+            {isPlaying ? (
+              <button className="m-2 rounded-md bg-green-500 text-white p-2" onClick={() => soundRef.current?.pause()}>
+                Pause
+              </button>
+            ) : (
+              <button className="m-2 rounded-md bg-blue-500 text-white p-2" onClick={() => soundRef.current?.play()}>
+                Play
+              </button>
+            )}
+          </>
         )}
 
         <div>
