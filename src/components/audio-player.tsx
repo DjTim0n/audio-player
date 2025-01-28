@@ -1,7 +1,6 @@
 'use client';
 
 import { api } from '@/lib/config/axios';
-import { useAuthStore } from '@/store/auth/auth-store-provider';
 import { Howl } from 'howler';
 import { useState, useEffect, useRef } from 'react';
 
@@ -147,20 +146,15 @@ export const AudioPlayer = () => {
             ))}
           </select>
         </div>
-        {isLoading ? (
-          <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-slate-200 border-t-slate-600" />
+
+        {isPlaying ? (
+          <button className="m-2 rounded-md bg-green-500 text-white p-2" onClick={() => soundRef.current?.pause()}>
+            Pause
+          </button>
         ) : (
-          <>
-            {isPlaying ? (
-              <button className="m-2 rounded-md bg-green-500 text-white p-2" onClick={() => soundRef.current?.pause()}>
-                Pause
-              </button>
-            ) : (
-              <button className="m-2 rounded-md bg-blue-500 text-white p-2" onClick={() => soundRef.current?.play()}>
-                Play
-              </button>
-            )}
-          </>
+          <button className="m-2 rounded-md bg-blue-500 text-white p-2" onClick={() => soundRef.current?.play()}>
+            Play
+          </button>
         )}
 
         <div>
