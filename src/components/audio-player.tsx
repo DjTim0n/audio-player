@@ -41,7 +41,8 @@ export const AudioPlayer = () => {
       soundRef.current?.unload();
       stopUpdatingTime();
     };
-  }, [selectedTrack, isLooping]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedTrack]);
 
   useEffect(() => {
     if (soundRef.current) {
@@ -112,9 +113,15 @@ export const AudioPlayer = () => {
   };
 
   const toggleLoop = () => {
-    setIsLooping(!isLooping);
+    const newLoopingState = !isLooping;
+    setIsLooping(newLoopingState);
+
     if (soundRef.current) {
-      soundRef.current.loop(!isLooping);
+      soundRef.current.loop(newLoopingState);
+
+      if (newLoopingState && !soundRef.current.playing()) {
+        soundRef.current.play();
+      }
     }
   };
 
