@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Input } from '../ui/input';
 import { Button } from '../ui/button';
 import { api } from '@/lib/config/axios';
+import { IsLoadingIcon } from '../ui/loading';
 
 export const UploadFileForm = () => {
   const [file, setFile] = useState<FileList | null>(null);
@@ -48,7 +49,7 @@ export const UploadFileForm = () => {
         {isLoading ? (
           <>
             <div className="h-[452px] w-[291px] flex flex-col items-center justify-center">
-              <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-slate-200 border-t-slate-600" />
+              <IsLoadingIcon />
             </div>
           </>
         ) : (
