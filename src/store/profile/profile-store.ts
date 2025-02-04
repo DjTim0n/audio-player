@@ -6,6 +6,7 @@ export const defaultProfileState = {
   first_name: '',
   last_name: '',
   email: '',
+  avatar: '',
 };
 
 export const createProfileStore = (initState: ProfileState = defaultProfileState) => {

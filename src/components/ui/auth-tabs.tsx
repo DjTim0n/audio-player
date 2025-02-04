@@ -4,17 +4,17 @@ import { useState } from 'react';
 import { AuthForm } from '../forms/auth-form';
 import { RegForm } from '../forms/reg-form';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
-import { useAuthStore } from '@/store/auth/auth-store-provider';
-import { useRouter } from 'next/navigation';
+// import { useAuthStore } from '@/store/auth/auth-store-provider';
+// import { useRouter } from 'next/navigation';
 
 export const AuthTabs = () => {
   const [disabled, setDisabled] = useState(false);
-  const isAuth = useAuthStore((state) => state.isAuth);
-  const { push } = useRouter();
+  // const isAuth = useAuthStore((state) => state.isAuth);
+  // const { push } = useRouter();
 
-  if (isAuth) {
-    push('/main');
-  }
+  // if (isAuth) {
+  //   push('/');
+  // }
 
   return (
     <>

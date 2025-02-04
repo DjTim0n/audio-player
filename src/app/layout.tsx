@@ -3,6 +3,8 @@ import './globals.css';
 import { cn } from '@/lib/utils';
 import ProvidersWrapper from '@/store/providers-wrapper';
 import { ThemeProvider } from '@/components/providers/theme-provider';
+import AuthProvider from '@/components/providers/auth-provider';
+import { Header } from '@/components/template/header/header';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -16,9 +18,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={cn('h-dvh min-h-dvh max-h-dvh w-screen')}>
+      <body className={cn('h-[94dvh] w-screen')}>
         <ThemeProvider>
-          <ProvidersWrapper>{children}</ProvidersWrapper>
+          <ProvidersWrapper>
+            <AuthProvider>
+              <Header />
+              {children}
+            </AuthProvider>
+          </ProvidersWrapper>
         </ThemeProvider>
       </body>
     </html>

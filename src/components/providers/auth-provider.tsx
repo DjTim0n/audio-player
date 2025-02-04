@@ -1,6 +1,6 @@
 'use client';
 
-import Loading from '@/app/(auth)/loading';
+import Loading from '@/app/loading';
 import { useAxiosAuth } from '@/lib/hooks/useAxiosAuth';
 import { useAuthStore } from '@/store/auth/auth-store-provider';
 import { useProfileStore } from '@/store/profile/profile-store-provider';
@@ -56,13 +56,16 @@ const useAuth = ({ redirect = true }: { redirect?: boolean } = {}) => {
     const { data, error } = await getMe();
     if (error || !data) {
       console.log('🚀 ~ getUser ~ currentPath:', currentPath);
-      if (![`/`].includes(currentPath)) {
-        push('/');
+      if (![`/login`].includes(currentPath)) {
+        push('/login');
       }
       setError(error);
       setUser(null);
       setLoading(false);
       return;
+    }
+    if (currentPath === '/login') {
+      push('/');
     }
     setUser(data);
     setLoading(false);

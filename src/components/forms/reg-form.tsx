@@ -67,7 +67,7 @@ export const RegForm = ({ setDisabled }: RegFormProps) => {
           refresh_token: res.data.refreshToken,
         });
 
-        push('/main');
+        push('/');
       })
       .catch(() => {
         setIsLoading(false);

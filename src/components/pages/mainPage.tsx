@@ -14,7 +14,7 @@ export const MainPage = () => {
   const { push } = useRouter();
 
   const handleLogOut = () => {
-    push('/');
+    push('/login');
     clearAuth();
     profile.clearProfile();
   };

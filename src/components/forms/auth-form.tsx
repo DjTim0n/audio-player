@@ -39,7 +39,7 @@ export const AuthForm = ({ setDisabled }: AuthFormProps) => {
           access_token: res.data.accessToken,
           refresh_token: res.data.refreshToken,
         });
-        push('/main');
+        push('/');
       })
       .catch((error) => {
         if (error.response.data.message === 'User not verified') {
